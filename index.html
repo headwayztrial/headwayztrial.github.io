@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!--Browser Page Title-->
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Headwayz</title>
+        <link rel="stylesheet" href="style.css">
+        <!-- <link href="https://fonts.googleapis.com/css?family=Kaushan+Script" rel="stylesheet"> -->
+       
+       <!--Link to Google APIs-->
+        <link href="https://fonts.googleapis.com/css?family=Shadows+Into+Light" rel="stylesheet">
+        <script src="https://use.fontawesome.com/f061fecdbc.js"></script>
+      </head>
+      <body>
+        <script src="main.js"></script>
+      
+      <!--Set up header for fixed header at top of screen-->
+      <div class="header" id="myHeader">
+      <h1 align="center">Headwayz</h1>
+      <p align= "center">Smile you are beautiful!</p>
+      </div>
+
+
+      
+
+<!--Create a screenshot-->
+  <video class="center" id="player" controls autoplay></video>
+  <button class= "btn" id="capture">Capture</button>
+  <canvas id="canvas" width=320 height=240></canvas>
+
+  <!--Create a button to go to next page-->
+  <button class= "btn2" id="capture" onclick="location.href='editor.html'">Next</button>
+
+    <!--Create a button to go to retake a photo-->
+    <button class= "btn3" id="capture" onClick='window.location.reload()'>Retake</button>
+ 
+
+
+  <script>
+    const player = document.getElementById('player');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    const captureButton = document.getElementById('capture');
+  
+    const constraints = {
+      video: true,
+    };
+  
+    captureButton.addEventListener('click', () => {
+      context.drawImage(player, 0, 0, canvas.width, canvas.height);
+  
+      // Stop all video streams.
+      player.srcObject.getVideoTracks().forEach(track => track.stop());
+    });
+  
+    navigator.mediaDevices.getUserMedia(constraints)
+    .then((stream) => {
+      // Attach the video stream to the video element and autoplay.
+      player.srcObject = stream;
+    });
+
+</script>
+</body>
+</html>
