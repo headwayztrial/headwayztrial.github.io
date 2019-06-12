@@ -18,7 +18,7 @@
 import * as tf from '@tensorflow/tfjs';
 import * as ui from './ui';
 import {Webcam} from './webcam';
-const LOCAL_MODEL_JSON_URL = 'http://storage.googleapis.com/modelinsight/tfjs/model.json'; 
+const LOCAL_MODEL_JSON_URL = 'https://storage.googleapis.com/modelinsight/tfjs/model.json'; 
 
 
 /**
