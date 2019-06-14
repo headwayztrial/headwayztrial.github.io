@@ -37,7 +37,7 @@ function show_fps(arr) {
 
 // A webcam class that generates Tensors from the images from the webcam.
 const webcam = new Webcam(document.getElementById('webcam'));
-// const customBKGSelect = document.getElementById("custom_bkg");
+const customBKGSelect = document.getElementById("custom_bkg");
 const img_sz = 224;
 var bkg_data = [];
 var predictions = 0;
@@ -63,6 +63,9 @@ function get_background(){
 let isPredicting = true;
 let isCustomBackground = false;
 var init_time = performance.now();
+let selectedRed = 0;
+let selectedGreen = 0;
+let selectedBlue = 0;
 
 async function predict() {
     ui.isPredicting();
@@ -81,11 +84,13 @@ async function predict() {
           const this_bkg = new ImageData(bkg_data, img_sz, img_sz)
           const mixed = tf.mul(img_clone, pred_mask);
           const bkg_tf = tf.fromPixels( this_bkg );
+          console.log(bkg_tf);
           const bkg_norm = tf.div( tf.cast(bkg_tf, "float32"), tf.scalar(255.));
           //Reverse mask: abs(pred_mask - 1)
           const rev_pred_mask = tf.abs( tf.sub(pred_mask, tf.scalar(1.)) );
           const bkg_matted = tf.mul( bkg_norm, rev_pred_mask );
-          const combo = tf.div(tf.add(mixed, bkg_matted), tf.scalar(2.0) );
+          // const combo = tf.div(tf.add(mixed, bkg_matted), tf.scalar(2.0) );
+          const combo = tf.add(mixed, bkg_matted);
           const predict_t = performance.now();
           return [pred_mask, combo]
         }
@@ -132,39 +137,24 @@ document.getElementById('show_original').addEventListener("click", () => {
 /**
 * Apply custom background
 **/
-/* customBKGSelect.addEventListener("change", () => {
-    const img_url = customBKGSelect.value;
+customBKGSelect.addEventListener("change", () => {
+    const bkg_color = customBKGSelect.value;
     isPredicting = false;
-    //disable/enable custom background 
-    if (img_url == "black")
-    { 
-      isCustomBackground = false;
-      isPredicting = true;
-    }
-    else
-    { 
-      //create canvas
-      const canvas_bkg = document.createElement("canvas");
-      canvas_bkg.id = "canvas_bkg";
-      canvas_bkg.width = img_sz;
-      canvas_bkg.height = img_sz;
-      //const canvas_bkg = document.getElementById('canvas_bkg')
-      const context = canvas_bkg.getContext("2d");
-      //create new image
-      const img_bkg = new Image();
-      img_bkg.src = img_url;
-      img_bkg.onload = function(){
-        context.drawImage(img_bkg, 0, 0, img_sz, img_sz);
-        const bkg_ImgData = context.getImageData(0, 0, img_sz, img_sz);
-        bkg_data = bkg_ImgData.data
-        isPredicting = true;
-      }
-      isCustomBackground = true;
+    isCustomBackground = true;
 
-    }
+    //create canvas
+    const canvas_bkg = document.getElementById("canvas_bkg");
+    const context = canvas_bkg.getContext("2d");
+    // create image data
+    context.rect(0, 0, img_sz, img_sz);
+    context.fillStyle = bkg_color;
+    context.fill();
+    const bkg_ImgData = context.getImageData(0, 0, img_sz, img_sz);
+    bkg_data = bkg_ImgData.data
+    isPredicting = true;
   }
   , false );
-*/
+
 
 async function init() {
   await webcam.setup();
