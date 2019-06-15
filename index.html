@@ -51,23 +51,30 @@
     <canvas id="canvas" width=224 height=224 class="center"></canvas>
 
     <!--Create a button to go to next page-->
-    <button class="btn2" id="capture" onclick="location.href='editor.html'">Next</button>
+    <button class="btn2" id="next" >Next</button>
 
     <!--Create a button to go to retake a photo-->
-    <button class="btn3" id="capture" onClick='window.location.reload()'>Retake</button>
+    <button class="btn3" id="retake" onClick='window.location.reload()'>Retake</button>
+  </div>
+
+  <div class="page3">
+    <h3 style="text-align: center;">Page 3</h3>
   </div>
 
 
   <script>
     const page1 = document.getElementsByClassName('page1')[0];
     const page2 = document.getElementsByClassName('page2')[0];
+    const page3 = document.getElementsByClassName('page3')[0];
 
     page2.style.display = 'none';
+    page3.style.display = 'none';
 
     const player = document.getElementById('combo_class');
     const canvas = document.getElementById('canvas');
     const context = canvas.getContext('2d');
     const captureButton = document.getElementById('capture');
+    const nextButton = document.getElementById('next');
 
     const constraints = {
       video: true,
@@ -76,7 +83,14 @@
     captureButton.addEventListener('click', () => {
       page1.style.display = 'none';
       page2.style.display = 'block';
+      page3.style.display = 'none';
       context.drawImage(player, 0, 0, canvas.width, canvas.height);
+    });
+
+    nextButton.addEventListener('click', () => {
+      page1.style.display = 'none';
+      page2.style.display = 'none';
+      page3.style.display = 'block';
     });
 
   </script>
