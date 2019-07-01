@@ -1,32 +1,50 @@
 {
   "name": "tfjs-examples-webcam-transfer-learning",
   "version": "0.1.0",
-  "description": "",
-  "main": "index.js",
   "license": "Apache-2.0",
   "private": true,
   "engines": {
     "node": ">=8.9.0"
   },
   "dependencies": {
+    "@babel/runtime": "^7.4.5",
     "@tensorflow/tfjs": "^0.11.7",
     "vega-embed": "~3.0.0"
   },
   "scripts": {
-    "watch": "NODE_ENV=development parcel --no-hmr --open index.html ",
-    "build": "NODE_ENV=production parcel build index.html  --no-minify --public-url ./"
+    "parcel-watch": "NODE_ENV=development parcel --no-hmr --open index.html ",
+    "parcel-build": "NODE_ENV=production parcel build index.html  --no-minify --public-url ./",
+    "dev": "WEBPACK_ENV=dev webpack-dev-server",
+    "start": "http-server --port ${PORT:-8080} build",
+    "prestart": "npm run build",
+    "build": "mkdir -p build && WEBPACK_ENV=production webpack && ncp src/ build/"
   },
   "devDependencies": {
-    "babel-plugin-transform-runtime": "~6.23.0",
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-transform-runtime": "^7.4.4",
+    "@babel/preset-env": "^7.4.5",
+    "autoprefixer-loader": "^3.1.0",
+    "babel-loader": "^8.0.6",
     "babel-polyfill": "~6.26.0",
-    "babel-preset-env": "~1.6.1",
     "clang-format": "~1.2.2",
-    "parcel-bundler": "~1.6.2"
+    "css-loader": "^0.18.0",
+    "exports-loader": "^0.6.2",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "http-server": "^0.8.5",
+    "less-loader": "^2.2.0",
+    "ncp": "^2.0.0",
+    "parcel-bundler": "~1.6.2",
+    "source-map-loader": "^0.1.5",
+    "style-loader": "^0.12.3",
+    "terser-webpack-plugin": "^1.3.0",
+    "uglifyjs-webpack-plugin": "^2.1.3",
+    "webpack": "^4.35.0",
+    "webpack-cli": "^3.3.5"
   },
   "babel": {
     "presets": [
       [
-        "env",
+        "@babel/preset-env",
         {
           "modules": false,
           "targets": {
@@ -43,7 +61,18 @@
       ]
     ],
     "plugins": [
-      "transform-runtime"
+      "@babel/transform-runtime"
     ]
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ibrcoffee/headwayztrial.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/ibrcoffee/headwayztrial.github.io/issues"
+  },
+  "homepage": "https://github.com/ibrcoffee/headwayztrial.github.io#readme",
+  "description": ""
 }
