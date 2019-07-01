@@ -8,12 +8,22 @@
   <!--Browser Page Title-->
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Headwayz</title>
-  <link rel="stylesheet" href="6329c744370e1d6aca8e91e9105dd6ab.css">
+  <link rel="stylesheet" href="style.css">
   <!-- <link href="https://fonts.googleapis.com/css?family=Kaushan+Script" rel="stylesheet"> -->
 
   <!--Link to Google APIs-->
   <link href="https://fonts.googleapis.com/css?family=Shadows+Into+Light" rel="stylesheet">
   <script src="https://use.fontawesome.com/f061fecdbc.js"></script>
+
+  <!-- React Dependencies for the SDK UI -->
+  <script src="js/vendor/react.production.min.js"></script>
+  <script src="js/vendor/react-dom.production.min.js"></script>
+  <!-- PhotoEditor SDK-->
+  <script src="js/PhotoEditorSDK.min.js"></script>
+  <!-- PhotoEditor SDK UI -->
+  <script src="js/PhotoEditorSDK.UI.DesktopUI.min.js"></script>
+  <link rel="stylesheet" href="css/PhotoEditorSDK.UI.DesktopUI.min.css" />
+
 </head>
 
 <body>
@@ -29,7 +39,8 @@
 
   <div class="page1">
     <!--Create a screenshot-->
-    <video controls="" autoplay="" playsinline="" muted="" id="webcam" width="224px" height="224px" style="position: fixed; top: 0px; left: 0px; visibility: hidden;"></video>
+    <video controls autoplay playsinline muted id="webcam" width="224px" height="224px"
+      style="position: fixed; top: 0px; left: 0px; visibility: hidden;"></video>
     <div id="status" style="text-align:center">Loading model...</div>
     <div style="position: absolute; left: 20vw; top: 260px; width: 200px">
       <select name="custom_bkg" id="custom_bkg" style="width: 120px; font-size:1rem" tabindex="1">
@@ -39,63 +50,98 @@
         <option value="blue">Blue</option>
       </select>
     </div>
-    <canvas id="combo_class" class="center" width="224px" height="224x" style="text-align: center;"></canvas>
+    <canvas id='combo_class' class="center" width="224px" height="224x" style="text-align: center;"></canvas>
+
     <button class="btn" id="capture">Capture</button>
     
-    <canvas id="canvas_bkg" width="224" height="224" style="display: none;"></canvas>
+    <canvas id="canvas_bkg" width=224 height=224 style="display: none;"></canvas>
 
   </div>
 
-  <div class="page2">
-    <canvas id="second_canvas" width="224" height="224" class="center"></canvas>
+  <div class="page2" style="display: none;">
+    <canvas id="second_canvas" width=224 height=224 class="center"></canvas>
 
     <!--Create a button to go to next page-->
-    <button class="btn2" id="next">Next</button>
+    <button class="btn2" id="next" >Next</button>
 
     <!--Create a button to go to retake a photo-->
-    <button class="btn3" id="retake" onclick="window.location.reload()">Retake</button>
+    <button class="btn3" id="retake" onClick='window.location.reload()'>Retake</button>
   </div>
 
-  <div class="page3">
-    <canvas id="third_canvas" width="224" height="224" class="center"></canvas>
+  <div class="page3" style="display: none;">
+    <canvas id="third_canvas" width=224 height=224 class="center" style="display: none;"></canvas>
+    <div id="editor" style="width: 80vw; height: 100vh;" class="center"></div>
+    <button class="btn-download" id="download"><i class="fa fa-download"></i> Download</button>
   </div>
-
 
   <script>
-    const page1 = document.getElementsByClassName('page1')[0];
-    const page2 = document.getElementsByClassName('page2')[0];
-    const page3 = document.getElementsByClassName('page3')[0];
 
-    page2.style.display = 'none';
-    page3.style.display = 'none';
+    window.addEventListener('load', (evt) => {
 
-    const firstCanvas = document.getElementById('combo_class');
+      // Pages
+      const page1 = document.getElementsByClassName('page1')[0];
+      const page2 = document.getElementsByClassName('page2')[0];
+      const page3 = document.getElementsByClassName('page3')[0];
 
-    const secondCanvas = document.getElementById('second_canvas');
-    const secondContext = secondCanvas.getContext('2d');
-
-    const thirdCanvas = document.getElementById('third_canvas');
-    const thirdContext = thirdCanvas.getContext('2d');
-
-    const captureButton = document.getElementById('capture');
-    const nextButton = document.getElementById('next');
-
-    captureButton.addEventListener('click', () => {
-      page1.style.display = 'none';
-      page2.style.display = 'block';
-      page3.style.display = 'none';
-      secondContext.drawImage(firstCanvas, 0, 0, secondCanvas.width, secondCanvas.height);
-    });
-
-    nextButton.addEventListener('click', () => {
-      page1.style.display = 'none';
       page2.style.display = 'none';
-      page3.style.display = 'block';
-      thirdContext.drawImage(secondCanvas, 0, 0, thirdCanvas.width, thirdCanvas.height);
+      page3.style.display = 'none';
+
+      const firstCanvas = document.getElementById('combo_class');
+
+      const secondCanvas = document.getElementById('second_canvas');
+      const secondContext = secondCanvas.getContext('2d');
+
+      const thirdCanvas = document.getElementById('third_canvas');
+      const thirdContext = thirdCanvas.getContext('2d');
+
+      const captureButton = document.getElementById('capture');
+      const nextButton = document.getElementById('next');
+
+      const downloadButton = document.getElementById('download');
+
+      captureButton.addEventListener('click', () => {
+        page1.style.display = 'none';
+        page2.style.display = 'block';
+        page3.style.display = 'none';
+        secondContext.drawImage(firstCanvas, 0, 0, secondCanvas.width, secondCanvas.height);
+      });
+
+      nextButton.addEventListener('click', () => {
+        page1.style.display = 'none';
+        page2.style.display = 'none';
+        page3.style.display = 'block';
+        thirdContext.drawImage(secondCanvas, 0, 0, thirdCanvas.width, thirdCanvas.height);
+
+        // photoEdit SDK
+        var image = new Image();
+        image.onload = function () {
+          var container = document.getElementById('editor')
+          var editor = new PhotoEditorSDK.UI.DesktopUI({
+            container: container,
+            // Please replace this with your license: https://www.photoeditorsdk.com/dashboard/subscriptions
+            license: '{"owner":"Ryan Haugland","version":"2.1","enterprise_license":false,"available_actions":["magic","filter","transform","sticker","text","adjustments","brush","focus","frames","camera"],"features":["adjustment","brush","filter","focus","frame","overlay","sticker","text","transform","textdesign","camera","library","export"],"platform":"HTML5","app_identifiers":["localhost","127.0.0.1","headwayztrial.github.io"],"api_token":"9_-E8DA_blx_AkMPULMRoQ","domains":["https://api.photoeditorsdk.com"],"issued_at":1560797306,"expires_at":1563321600,"signature":"mPmCkAxsD3rnQZbvFYi2ZdYgpt9poGQ6DTfIOyXZMfP4YKu2dtMMjX/11YXo+ZIzIoT10HdslSYsvJDjic1H97jdjeXywhEwNvZ+gfvtzmdiFUMIuKt4rlX/6xLzpl/JhD0rKikpg8+AluopvPOb9k9ktBK1Qo6Mkfy3Mz756AU/TzA3RAS9MemfoimLpMqcl0vnNwwgpoWnG4drgaRk+ICDD9Mq+YFp7QZUy5HGuwV014CIuddAxJJQlCpO2HRllVk+CLXpU55UZISlajShGDvt3zRJMuyHLdNNMjNm8IP2NMx5yEsRh1UFkzSiVCwcvCnZ5TAe6WzxXgZ534vIdS4j9FnbZhbGcjbc4iEQQAlmxRdQdYRY/sEBdhj/mqyC3MnTqY29JNy2iMaLsLm/dRJECwStS7QbHVLmZ84C2ianHbsU5PNpcJuBw3QNbjfyCF53UDEoguwokcHqg5OGX++7DCoTn2P4POp7+Oges/VdexvNVsHbHHgWEl7zXybrCuqfh/SOdzgX8ySbumeZATR8rnUx/iv22LXWC0HU6rUues9YRKf+KcOVSqwu+TKgqGyXx4hHwudPTsDAn4AQ391MeKQr/roQCE7LfAdt2IRyF9dCudKUinWPSOrV3TQNwJKvtRgH20xwSXD6NSWizob5qcUd8tgbBMm2p9TmkOg="}',
+            editor: {
+              image: image
+            },
+            assets: {
+              // This should be the absolute path to your `assets` directory
+              baseUrl: './assets'
+            }
+          });
+
+          downloadButton.addEventListener('click', () => {
+            editor.export(true);
+          });
+        }
+        // image.crossOrigin = 'Anonymous'  // Setup CORS accordingly if needed
+        image.src = thirdCanvas.toDataURL();
+      });
+
     });
 
   </script>
-  <script src="tfjs-examples-webcam-transfer-learning.js"></script>
+
+  <script src="main.js"></script>
 </body>
 
 </html>
