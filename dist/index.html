@@ -137,6 +137,17 @@
         image.src = thirdCanvas.toDataURL();
       });
 
+      navigator.getMedia = ( navigator.getUserMedia || // use the proper vendor prefix
+                       navigator.webkitGetUserMedia ||
+                       navigator.mozGetUserMedia ||
+                       navigator.msGetUserMedia);
+
+      navigator.getMedia({video: true}, function() {
+        console.log('webcam status good');
+      }, function() {
+        alert('webcam is not available');
+      });
+
     });
 
   </script>
